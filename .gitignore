@@ -17,3 +17,7 @@ ai-service/*.log
 
 # never publish database dumps
 *.sql
+
+# submission package (uploaded to Drive, not git)
+/Submission/
+/AI-Form-Builder-Submission.zip
