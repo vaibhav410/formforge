@@ -33,6 +33,7 @@ class FormsIndex extends Component
         $this->resetPage();
     }
 
+    #[\Livewire\Attributes\On('create-form')]
     public function createForm(FormService $formService): void
     {
         $form = $formService->createForm(auth()->user());

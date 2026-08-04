@@ -7,7 +7,9 @@
             </div>
             <div class="flex items-center gap-2">
                 <a href="{{ route('forms.builder', $form) }}" class="px-3 py-2 text-sm text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50">← Builder</a>
-                <button type="button" wire:click="requestExport"
+                {{-- Header slot renders outside the component root; use a
+                     global dispatch instead of wire:click (see FormsIndex). --}}
+                <button type="button" onclick="Livewire.dispatch('request-export')"
                         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">
                     Export CSV
                 </button>

@@ -11,7 +11,10 @@
                    class="px-4 py-2 text-sm font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-md hover:bg-indigo-100">
                     ✨ Generate with AI
                 </a>
-                <button type="button" wire:click="createForm"
+                {{-- The layout renders this header slot OUTSIDE the Livewire
+                     component root, so wire:click cannot bind here — dispatch
+                     a global event the component listens for instead. --}}
+                <button type="button" onclick="Livewire.dispatch('create-form')"
                         class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500">
                     + New form
                 </button>

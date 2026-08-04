@@ -53,6 +53,7 @@ class SubmissionsIndex extends Component
         $this->expandedId = null;
     }
 
+    #[\Livewire\Attributes\On('request-export')]
     public function requestExport(): void
     {
         $export = \App\Models\FormExport::create([
