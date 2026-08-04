@@ -1,0 +1,11 @@
+# AI service (Python)
+ai-service/.env
+ai-service/__pycache__/
+ai-service/**/__pycache__/
+ai-service/.venv/
+ai-service/.pytest_cache/
+ai-service/htmlcov/
+
+# OS noise
+.DS_Store
+Thumbs.db
