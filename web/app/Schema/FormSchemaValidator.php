@@ -182,7 +182,7 @@ final class FormSchemaValidator
 
         $regex = $v['regex'] ?? null;
         if ($regex !== null) {
-            if (! is_string($regex) || @preg_match('/'.str_replace('/', '\/', $regex).'/', '') === false) {
+            if (! is_string($regex) || ! self::regexCompiles($regex)) {
                 $errors[] = self::error("$path.validation.regex", 'Regex does not compile.');
             }
         }
@@ -242,6 +242,17 @@ final class FormSchemaValidator
         }
 
         return $errors;
+    }
+
+    /** Compile-check a user pattern without leaking PHP warnings. */
+    public static function regexCompiles(string $pattern): bool
+    {
+        set_error_handler(static fn () => true);
+        try {
+            return preg_match('/'.str_replace('/', '\/', $pattern).'/', '') !== false;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /** @return array{path: string, message: string} */

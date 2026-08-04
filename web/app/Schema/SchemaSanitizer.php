@@ -148,8 +148,10 @@ final class SchemaSanitizer
         $raw = strtolower(trim($raw));
 
         return match (true) {
-            str_contains($raw, 'select') || str_contains($raw, 'choice') => FieldType::Dropdown,
+            // "multi"/"check" must win over the bare "select" substring:
+            // "multiselect" is a checkbox, not a dropdown.
             str_contains($raw, 'check') || str_contains($raw, 'multi') => FieldType::Checkbox,
+            str_contains($raw, 'select') || str_contains($raw, 'choice') => FieldType::Dropdown,
             str_contains($raw, 'radio') => FieldType::Radio,
             str_contains($raw, 'area') || str_contains($raw, 'long') || str_contains($raw, 'paragraph') => FieldType::Textarea,
             str_contains($raw, 'mail') => FieldType::Email,
@@ -228,7 +230,7 @@ final class SchemaSanitizer
         }
 
         $regex = $validation['regex'] ?? null;
-        $out['regex'] = (is_string($regex) && $regex !== '' && @preg_match('/'.str_replace('/', '\/', $regex).'/', '') !== false)
+        $out['regex'] = (is_string($regex) && $regex !== '' && FormSchemaValidator::regexCompiles($regex))
             ? $regex
             : null;
 

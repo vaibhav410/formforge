@@ -300,8 +300,17 @@ class FormBuilder extends Component
             return;
         }
         $this->jsonError = null;
+
+        // The canvas must never render an unsanitized schema — keep the
+        // last valid one when the pasted JSON fails validation. The
+        // editor keeps the user's text so they can fix it in place.
+        $lastValid = $this->schema;
         $this->schema = $decoded;
         $this->persist();
+
+        if ($this->saveState === 'error') {
+            $this->schema = $lastValid;
+        }
     }
 
     /** Undo/redo entry point — snapshots come from the Alpine history store. */

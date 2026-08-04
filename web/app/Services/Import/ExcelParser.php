@@ -32,7 +32,13 @@ final class ExcelParser
     /** @return array{schema: array, issues: list<array{block: string, reason: string}>} */
     public function parse(string $path): array
     {
-        $reader = IOFactory::createReaderForFile($path);
+        // Explicit Xlsx reader: without this, PhpSpreadsheet quietly
+        // falls back to its CSV reader for arbitrary files, and garbage
+        // gets "parsed" instead of rejected with a clear error.
+        $reader = IOFactory::createReader('Xlsx');
+        if (! $reader->canRead($path)) {
+            throw new \RuntimeException('The file is not a valid .xlsx spreadsheet.');
+        }
         $reader->setReadDataOnly(true);
         $spreadsheet = $reader->load($path);
         $sheet = $spreadsheet->getActiveSheet();
