@@ -63,6 +63,10 @@ class ImportWizard extends Component
         ProcessImportJob::dispatch($import);
         $this->importUuid = $import->uuid;
         $this->mapping = [];
+
+        // Sync queues finish parsing inline; build the mapping now so the
+        // preview renders immediately instead of waiting for a poll tick.
+        $this->checkImport();
     }
 
     /** wire:poll target while parsing runs. */

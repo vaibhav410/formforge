@@ -55,6 +55,10 @@ class AiCreate extends Component
 
         RunAiTaskJob::dispatch($task);
         $this->taskUuid = $task->uuid;
+
+        // On sync queues the job already ran inline — the polling UI
+        // (which owns the redirect) never mounts, so check right away.
+        $this->checkTask();
     }
 
     public function useExample(int $index): void
