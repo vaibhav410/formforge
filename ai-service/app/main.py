@@ -53,6 +53,24 @@ async def generation_failed_handler(_, exc: GenerationFailed) -> JSONResponse:
     )
 
 
+@app.get("/")
+async def root() -> dict:
+    """Friendly landing for humans hitting the bare domain."""
+    return {
+        "service": "FormForge AI Service",
+        "status": "ok",
+        "provider": "groq",
+        "health": "/health",
+        "docs": "/docs",
+        "endpoints": [
+            "POST /v1/forms/generate",
+            "POST /v1/forms/edit",
+            "POST /v1/forms/translate",
+        ],
+        "note": "API endpoints require the service bearer token.",
+    }
+
+
 @app.get("/health")
 async def health() -> dict:
     settings = get_settings()
