@@ -17,8 +17,8 @@ RUN composer install --no-dev --no-interaction --no-scripts --prefer-dist \
 FROM php:8.3-apache AS runtime
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-        libzip-dev libpng-dev libicu-dev libonig-dev unzip \
-    && docker-php-ext-install pdo_mysql zip gd intl bcmath pcntl opcache \
+        libzip-dev libpng-dev libicu-dev libonig-dev libpq-dev unzip \
+    && docker-php-ext-install pdo_mysql pdo_pgsql zip gd intl bcmath pcntl opcache \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Apache: serve public/, allow .htaccess-less routing

@@ -1,0 +1,52 @@
+# One-click Render blueprint (free tier, no card):
+#   https://render.com/deploy?repo=https://github.com/vaibhav410/formforge
+#
+# Free-tier adaptations (documented in README):
+#   - Postgres instead of MySQL (Render has no free MySQL; the schema is portable)
+#   - sync queue instead of Redis+worker (free tier has no background workers;
+#     AI calls run inside the request, which fits comfortably)
+#   - database cache/sessions (no Redis needed)
+# The docker-compose stack remains the full-fidelity deployment.
+
+services:
+  - type: web
+    name: formforge-web
+    runtime: docker
+    plan: free
+    rootDir: web
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: "80"
+      - key: APP_NAME
+        value: FormForge
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        sync: false # paste: output of `php artisan key:generate --show`
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: formforge-db
+          property: connectionString
+      - key: QUEUE_CONNECTION
+        value: sync
+      - key: CACHE_STORE
+        value: database
+      - key: SESSION_DRIVER
+        value: database
+      - key: AI_SERVICE_URL
+        sync: false # paste: your Vercel AI service URL
+      - key: AI_SERVICE_TOKEN
+        sync: false # paste: same value as the AI service's AI_SERVICE_TOKEN
+      - key: AI_SERVICE_TIMEOUT
+        value: "90"
+      - key: SEED_DEMO
+        value: "true"
+
+databases:
+  - name: formforge-db
+    plan: free
