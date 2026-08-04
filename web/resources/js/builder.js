@@ -1,4 +1,19 @@
 import Sortable from 'sortablejs';
+import qrcode from 'qrcode-generator';
+
+/** Render a share-link QR into the given container element. */
+window.renderShareQr = function (el, url) {
+    const qr = qrcode(0, 'M');
+    qr.addData(url);
+    qr.make();
+    el.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+    const svg = el.querySelector('svg');
+    if (svg) {
+        svg.setAttribute('class', 'w-44 h-44');
+        svg.removeAttribute('width');
+        svg.removeAttribute('height');
+    }
+};
 
 /**
  * Alpine component for the builder frame: client-side undo/redo history.

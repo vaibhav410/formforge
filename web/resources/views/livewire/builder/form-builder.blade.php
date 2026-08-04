@@ -52,15 +52,32 @@
         <a href="{{ route('forms.preview', $form) }}" target="_blank"
            class="px-3 py-1.5 text-sm text-gray-600 rounded hover:bg-gray-100">Preview</a>
 
+        <a href="{{ route('forms.versions', $form) }}"
+           class="px-3 py-1.5 text-sm text-gray-600 rounded hover:bg-gray-100">History</a>
+
         @if ($form->isPublished())
-            <div x-data="{copied:false}" class="flex items-center">
-                <button type="button"
-                        x-on:click="navigator.clipboard.writeText('{{ $form->publicUrl() }}'); copied = true; setTimeout(() => copied = false, 1500)"
-                        class="px-3 py-1.5 text-sm text-gray-600 rounded hover:bg-gray-100"
-                        title="{{ $form->publicUrl() }}">
-                    <span x-show="!copied">Copy link</span>
-                    <span x-show="copied" x-cloak class="text-green-600">Copied ✓</span>
+            <div x-data="{ open: false, copied: false }" class="relative">
+                <button type="button" x-on:click="open = !open"
+                        class="px-3 py-1.5 text-sm text-gray-600 rounded hover:bg-gray-100">
+                    Share
                 </button>
+                <div x-show="open" x-cloak x-on:click.outside="open = false"
+                     x-transition.opacity.duration.100ms
+                     class="absolute right-0 top-10 z-30 w-64 bg-white border border-gray-200 rounded-lg shadow-lg p-4 space-y-3">
+                    <p class="text-xs text-gray-400 break-all">{{ $form->publicUrl() }}</p>
+                    <button type="button"
+                            x-on:click="navigator.clipboard.writeText('{{ $form->publicUrl() }}'); copied = true; setTimeout(() => copied = false, 1500)"
+                            class="w-full px-3 py-1.5 text-sm text-indigo-700 bg-indigo-50 rounded-md hover:bg-indigo-100">
+                        <span x-show="!copied">Copy link</span>
+                        <span x-show="copied" x-cloak class="text-green-600">Copied ✓</span>
+                    </button>
+                    <div class="flex justify-center pt-1"
+                         x-init="$watch('open', v => v && renderShareQr($refs.qr, '{{ $form->publicUrl() }}'))">
+                        <div x-ref="qr" aria-label="QR code for the public form link"></div>
+                    </div>
+                    <a href="{{ $form->publicUrl() }}" target="_blank"
+                       class="block text-center text-xs text-indigo-600 hover:underline">Open public form ↗</a>
+                </div>
             </div>
         @endif
 

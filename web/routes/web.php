@@ -36,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/forms/{form:uuid}/builder', FormBuilder::class)->name('forms.builder');
     Route::get('/forms/{form:uuid}/preview', PreviewController::class)->name('forms.preview');
     Route::get('/forms/{form:uuid}/submissions', SubmissionsIndex::class)->name('forms.submissions');
+    Route::get('/forms/{form:uuid}/versions', \App\Livewire\Versions\VersionHistory::class)->name('forms.versions');
     Route::get('/forms/{form:uuid}/analytics', AnalyticsDashboard::class)->name('forms.analytics');
     Route::get('/exports/{export:uuid}/download', ExportDownloadController::class)->name('exports.download');
 });

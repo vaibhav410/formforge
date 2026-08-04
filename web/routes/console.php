@@ -1,8 +1,8 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use App\Jobs\AggregateAnalyticsJob;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+// Nightly rollup of raw form_events into form_analytics_daily,
+// plus pruning of aggregated events past the retention window.
+Schedule::job(new AggregateAnalyticsJob())->dailyAt('01:10');

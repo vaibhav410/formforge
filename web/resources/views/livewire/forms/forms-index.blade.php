@@ -66,6 +66,7 @@
                             <a href="{{ route('forms.builder', $form) }}" class="px-2 py-1 rounded text-gray-600 hover:bg-gray-100">Edit</a>
                             <a href="{{ route('forms.submissions', $form) }}" class="px-2 py-1 rounded text-gray-600 hover:bg-gray-100">Submissions</a>
                             <a href="{{ route('forms.analytics', $form) }}" class="px-2 py-1 rounded text-gray-600 hover:bg-gray-100">Analytics</a>
+                            <a href="{{ route('forms.versions', $form) }}" class="px-2 py-1 rounded text-gray-600 hover:bg-gray-100">Versions</a>
                             @if ($form->isPublished())
                                 <a href="{{ $form->publicUrl() }}" target="_blank" class="px-2 py-1 rounded text-indigo-600 hover:bg-indigo-50">Open ↗</a>
                             @endif
