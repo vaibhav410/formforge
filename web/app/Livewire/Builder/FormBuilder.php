@@ -45,6 +45,14 @@ class FormBuilder extends Component
 
     public ?string $jsonError = null;
 
+    public bool $showAiPanel = false;
+
+    public string $aiPrompt = '';
+
+    public ?string $aiTaskUuid = null;
+
+    public ?string $aiError = null;
+
     public function mount(Form $form): void
     {
         $this->authorize('update', $form);
@@ -301,6 +309,68 @@ class FormBuilder extends Component
     {
         $this->schema = $schema;
         $this->persist(recordHistory: false);
+    }
+
+    // ── AI edit / translate ──────────────────────────────────────
+
+    public function queueAiChange(string $mode): void
+    {
+        if (! in_array($mode, ['edit', 'translate'], true) || $this->aiTaskUuid !== null) {
+            return;
+        }
+        $this->validate(['aiPrompt' => ['required', 'string', 'min:3', 'max:2000']]);
+        $this->aiError = null;
+
+        $key = 'ai-generation:'.auth()->id();
+        if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, (int) config('formforge.rate_limits.ai_generations_per_hour'))) {
+            $this->aiError = 'AI limit reached — try again in a while.';
+
+            return;
+        }
+        \Illuminate\Support\Facades\RateLimiter::hit($key, 3600);
+
+        $task = \App\Models\AiTask::create([
+            'user_id' => auth()->id(),
+            'form_id' => $this->form->id,
+            'type' => $mode === 'edit' ? \App\Enums\AiTaskType::Edit : \App\Enums\AiTaskType::Translate,
+            'status' => \App\Enums\TaskStatus::Queued,
+            'prompt' => $this->aiPrompt,
+            'input_schema' => $this->schema,
+        ]);
+
+        \App\Jobs\RunAiTaskJob::dispatch($task);
+        $this->aiTaskUuid = $task->uuid;
+    }
+
+    /** wire:poll target while an AI task runs. */
+    public function checkAiTask(): void
+    {
+        if ($this->aiTaskUuid === null) {
+            return;
+        }
+        $task = \App\Models\AiTask::query()->where('uuid', $this->aiTaskUuid)->first();
+        if ($task === null || ! $task->status->isTerminal()) {
+            return;
+        }
+
+        $this->aiTaskUuid = null;
+
+        if ($task->status === \App\Enums\TaskStatus::Failed) {
+            $this->aiError = $task->error ?? 'The AI request failed.';
+
+            return;
+        }
+
+        // The job saved the result as the new draft — adopt it.
+        $draft = $this->form->latestDraftVersion() ?? $this->form->latestVersion();
+        if ($draft !== null) {
+            $this->schema = $draft->schema_json;
+            $this->syncJsonText();
+            $this->aiPrompt = '';
+            $this->form->refresh();
+            $this->savedAt = now()->format('H:i');
+            $this->dispatch('schema-committed', schema: $this->schema);
+        }
     }
 
     // ── Persistence ──────────────────────────────────────────────

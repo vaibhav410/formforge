@@ -151,7 +151,7 @@ def edit_system_prompt() -> str:
 def edit_user_prompt(prompt: str, schema: dict[str, Any]) -> str:
     return (
         "Current form schema:\n"
-        + json.dumps(schema, ensure_ascii=False)
+        + json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
         + f"\n\nInstruction: {prompt}"
     )
 
@@ -172,7 +172,7 @@ def translate_system_prompt() -> str:
 def translate_user_prompt(language: str, schema: dict[str, Any]) -> str:
     return (
         f"Translate this form into {language}:\n"
-        + json.dumps(schema, ensure_ascii=False)
+        + json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
     )
 
 

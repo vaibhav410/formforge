@@ -12,6 +12,9 @@ Every round-trip is logged as an AttemptLog for Laravel's prompt_logs.
 
 from __future__ import annotations
 
+import asyncio
+import re
+
 from pydantic import ValidationError
 
 from ..config import Settings
@@ -63,6 +66,7 @@ class FormGenerator:
         total_prompt_tokens = 0
         total_completion_tokens = 0
         last_error = "unknown error"
+        waited_for_rate_limit = False
 
         for attempt_number in range(1, self._settings.max_repair_attempts + 1):
             try:
@@ -76,7 +80,17 @@ class FormGenerator:
                     response_excerpt=str(exc)[:500],
                 ))
                 last_error = str(exc)
-                if exc.retryable and model != self._settings.groq_model_fallback:
+                if not exc.retryable:
+                    break
+                # Groq free tier enforces small per-minute token budgets.
+                # A TPM 429 usually clears within a minute, so wait once
+                # for the primary model before dropping to the fallback
+                # (whose budget is often too small for edit prompts).
+                if self._is_rate_limit(str(exc)) and not waited_for_rate_limit:
+                    waited_for_rate_limit = True
+                    await asyncio.sleep(self._rate_limit_wait(str(exc)))
+                    continue
+                if model != self._settings.groq_model_fallback:
                     model = self._settings.groq_model_fallback
                     continue
                 break
@@ -112,6 +126,19 @@ class FormGenerator:
             f"Could not produce a valid schema after {len(attempts)} attempt(s): {last_error}",
             attempts,
         )
+
+    @staticmethod
+    def _is_rate_limit(message: str) -> bool:
+        lowered = message.lower()
+        return "429" in message or "tokens per minute" in lowered or "rate limit" in lowered
+
+    @staticmethod
+    def _rate_limit_wait(message: str) -> float:
+        """Honour Groq's 'try again in Xs' hint when present, capped at 60s."""
+        match = re.search(r"try again in ([0-9.]+)s", message)
+        if match:
+            return min(60.0, float(match.group(1)) + 1.0)
+        return 25.0
 
     def _parse(self, result: ChatResult):
         """Returns ("success", schema_dict) or (outcome, [error strings])."""

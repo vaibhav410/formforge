@@ -39,6 +39,11 @@
 
         <div class="w-px h-6 bg-gray-200"></div>
 
+        <button type="button" wire:click="$toggle('showAiPanel')"
+                class="px-3 py-1.5 text-sm rounded {{ $showAiPanel ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-100' }}">
+            ✨ AI
+        </button>
+
         <button type="button" wire:click="$toggle('showJson')"
                 class="px-3 py-1.5 text-sm rounded {{ $showJson ? 'bg-indigo-50 text-indigo-700' : 'text-gray-600 hover:bg-gray-100' }}">
             {} JSON
@@ -65,6 +70,42 @@
             {{ $form->isPublished() ? 'Republish' : 'Publish' }}
         </button>
     </div>
+
+    {{-- ── AI panel ────────────────────────────────────────────── --}}
+    @if ($showAiPanel)
+        <div class="bg-indigo-50/70 border-b border-indigo-100 px-4 py-3">
+            <div class="max-w-3xl mx-auto">
+                <div class="flex items-center gap-2">
+                    <input type="text" wire:model="aiPrompt"
+                           wire:keydown.enter="queueAiChange('edit')"
+                           placeholder="e.g. add an emergency contact section · make phone required · translate labels to Hindi"
+                           class="flex-1 rounded-lg border-indigo-200 text-sm focus:border-indigo-400 focus:ring-indigo-300"
+                           @if ($aiTaskUuid) disabled @endif />
+                    <button type="button" wire:click="queueAiChange('edit')"
+                            class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 disabled:opacity-50"
+                            @if ($aiTaskUuid) disabled @endif>
+                        Apply with AI
+                    </button>
+                    <button type="button" wire:click="queueAiChange('translate')"
+                            title="Treat the instruction as a target language, e.g. 'Hindi'"
+                            class="px-4 py-2 text-sm font-medium text-indigo-700 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-50"
+                            @if ($aiTaskUuid) disabled @endif>
+                        Translate
+                    </button>
+                </div>
+                @error('aiPrompt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
+                @if ($aiTaskUuid)
+                    <div class="mt-2 flex items-center gap-2 text-xs text-indigo-600" wire:poll.1500ms="checkAiTask">
+                        <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
+                        The AI is updating your form — you can keep editing meanwhile.
+                    </div>
+                @endif
+                @if ($aiError)
+                    <p class="mt-2 text-xs text-red-600">{{ $aiError }}</p>
+                @endif
+            </div>
+        </div>
+    @endif
 
     {{-- ── Schema errors banner ────────────────────────────────── --}}
     @if ($schemaErrors !== [])
