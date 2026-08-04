@@ -9,3 +9,5 @@ ai-service/htmlcov/
 # OS noise
 .DS_Store
 Thumbs.db
+
+ai-service/*.log
