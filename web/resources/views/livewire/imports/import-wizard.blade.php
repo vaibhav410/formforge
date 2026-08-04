@@ -5,9 +5,12 @@
 
     <div class="py-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 
+        {{-- Distinct wire:keys per step: without them Livewire's morph
+             reuses the same div across steps and the step-2 poller
+             survives into step 3, swallowing button clicks. --}}
         {{-- Step 1: upload --}}
         @if ($importUuid === null)
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
+            <div wire:key="step-upload" class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
                 <label for="import-upload"
                        class="block border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer hover:border-indigo-400 transition"
                        x-data="{ dragging: false }"
@@ -38,7 +41,7 @@
 
         {{-- Step 2: parsing --}}
         @elseif ($import !== null && ! in_array($import->status->value, ['preview_ready', 'committed'], true))
-            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center" wire:poll.1500ms="checkImport">
+            <div wire:key="step-parsing" class="bg-white rounded-xl border border-gray-200 shadow-sm p-12 text-center" wire:poll.1500ms="checkImport">
                 <svg class="mx-auto w-8 h-8 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                 <p class="mt-4 text-gray-600 font-medium">Parsing {{ $import->original_filename }}…</p>
                 <p class="mt-1 text-sm text-gray-400">Deterministic structure first; AI only for ambiguous fields.</p>
@@ -47,7 +50,7 @@
 
         {{-- Step 3: preview & mapping --}}
         @elseif ($import !== null && $mapping !== [])
-            <div class="space-y-4">
+            <div wire:key="step-mapping" class="space-y-4">
                 <div class="flex items-center gap-3">
                     <input type="text" wire:model="formTitle"
                            class="text-lg font-semibold text-gray-800 rounded-md border-gray-300 focus:border-indigo-400 focus:ring-indigo-300 w-96" />
@@ -57,7 +60,10 @@
                     @endif
                     <div class="flex-1"></div>
                     <button type="button" wire:click="startOver" class="px-3 py-2 text-sm text-gray-500 hover:text-gray-700">Start over</button>
-                    <button type="button" wire:click="commit"
+                    {{-- NB: the action must not be named "commit" — that
+                         collides with Livewire's internal JS $wire.commit
+                         (request flush) and the call silently vanishes. --}}
+                    <button type="button" wire:click="commitImport"
                             class="px-5 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-500">
                         Create form ({{ collect($mapping)->where('include', true)->count() }} fields)
                     </button>

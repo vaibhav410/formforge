@@ -21,7 +21,8 @@
 
         {{-- Export status strip (polls while a job is running) --}}
         @if ($exports->isNotEmpty())
-            <div class="flex flex-wrap gap-2" @if ($exports->contains(fn ($e) => ! $e->status->isTerminal())) wire:poll.2s @endif>
+            <div wire:key="exports-strip-{{ $exports->contains(fn ($e) => ! $e->status->isTerminal()) ? 'polling' : 'idle' }}"
+                 class="flex flex-wrap gap-2" @if ($exports->contains(fn ($e) => ! $e->status->isTerminal())) wire:poll.2s @endif>
                 @foreach ($exports as $export)
                     <div class="flex items-center gap-2 text-xs px-3 py-1.5 rounded-full border
                         {{ $export->status->value === 'completed' ? 'bg-green-50 border-green-200 text-green-700' : ($export->status->value === 'failed' ? 'bg-red-50 border-red-200 text-red-600' : 'bg-amber-50 border-amber-200 text-amber-700') }}">

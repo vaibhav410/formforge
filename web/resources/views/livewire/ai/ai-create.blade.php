@@ -37,7 +37,7 @@
                 </button>
 
                 @if ($task !== null && ! $task->status->isTerminal())
-                    <div class="flex items-center gap-2 text-sm text-gray-500" wire:poll.1500ms="checkTask">
+                    <div wire:key="ai-poller-{{ $task->uuid }}" class="flex items-center gap-2 text-sm text-gray-500" wire:poll.1500ms="checkTask">
                         <svg class="w-4 h-4 animate-spin text-indigo-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                         {{ $task->status->value === 'queued' ? 'Queued…' : 'The AI is designing your form…' }}
                     </div>

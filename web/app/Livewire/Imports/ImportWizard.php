@@ -16,7 +16,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 
 /**
- * Three-step wizard: upload → queued parse → preview & mapping →
+ * Three-step wizard: upload -> queued parse -> preview & mapping ->
  * commit. Nothing becomes a form until the user has reviewed (and
  * possibly corrected) every detected field.
  */
@@ -168,7 +168,13 @@ class ImportWizard extends Component
         return $schema;
     }
 
-    public function commit(FormService $formService): void
+    /**
+     * The "Create form" commit step. NB: deliberately NOT named commit()
+     * — Livewire's JS $wire has an internal commit (request flush) that
+     * shadows same-named actions, so wire:click="commit" never reaches
+     * the server.
+     */
+    public function commitImport(FormService $formService): void
     {
         $import = $this->currentImport();
         if ($import === null || $import->status !== TaskStatus::PreviewReady) {

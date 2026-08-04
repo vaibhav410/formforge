@@ -112,7 +112,7 @@
                 </div>
                 @error('aiPrompt') <p class="mt-1 text-xs text-red-600">{{ $message }}</p> @enderror
                 @if ($aiTaskUuid)
-                    <div class="mt-2 flex items-center gap-2 text-xs text-indigo-600" wire:poll.1500ms="checkAiTask">
+                    <div wire:key="builder-ai-poller-{{ $aiTaskUuid }}" class="mt-2 flex items-center gap-2 text-xs text-indigo-600" wire:poll.1500ms="checkAiTask">
                         <svg class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                         The AI is updating your form — you can keep editing meanwhile.
                     </div>
