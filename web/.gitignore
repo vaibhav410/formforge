@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+
+# vercel local link
+ai-service/.vercel/
+ai-service/.env*.local
