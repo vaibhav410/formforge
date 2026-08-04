@@ -44,3 +44,43 @@ test('the full wizard flow: upload, parse, map, commit creates the form', functi
 
     $component->assertRedirect(route('forms.builder', $import->form));
 });
+
+test('commit survives numbered-question keys from real documents', function () {
+    // Regression: a parsed schema whose keys start with digits (numbered
+    // questions) failed strict validation on commit before slugKey
+    // enforced the leading-letter rule.
+    $user = User::factory()->create();
+
+    $parsedSchema = \App\Schema\SchemaFactory::emptySchema('Numbered Questionnaire');
+    $parsedSchema['sections'] = [\App\Schema\SchemaFactory::section('Section 14', ['fields' => [
+        \App\Schema\SchemaFactory::field(\App\Enums\FieldType::Text, ['label' => '1. Full Name', 'key' => '1_full_name']),
+        \App\Schema\SchemaFactory::field(\App\Enums\FieldType::Email, ['label' => '2. Email', 'key' => '2_email']),
+        \App\Schema\SchemaFactory::field(\App\Enums\FieldType::Text, ['label' => 'प्रश्न तीन', 'key' => '']),
+    ]])];
+
+    $import = Import::create([
+        'user_id' => $user->id,
+        'type' => \App\Enums\ImportType::Word,
+        'status' => TaskStatus::PreviewReady,
+        'original_filename' => 'numbered.docx',
+        'stored_path' => 'imports/fake.docx',
+        'size_bytes' => 1000,
+        'parsed_schema' => $parsedSchema,
+    ]);
+
+    $component = Livewire::actingAs($user)
+        ->test(\App\Livewire\Imports\ImportWizard::class)
+        ->set('importUuid', $import->uuid)
+        ->call('checkImport')
+        ->call('commitImport');
+
+    $import->refresh();
+    expect($component->get('error'))->toBeNull()
+        ->and($import->status)->toBe(TaskStatus::Committed)
+        ->and($import->form_id)->not->toBeNull();
+
+    $keys = \App\Schema\FormSchema::fromArray($import->form->latestVersion()->schema_json)->fieldKeys();
+    foreach ($keys as $key) {
+        expect($key)->toMatch('/^[a-z][a-z0-9_]{0,63}$/');
+    }
+});

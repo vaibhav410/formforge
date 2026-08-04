@@ -119,8 +119,8 @@ final class SchemaSanitizer
         }
 
         $label = $this->cleanString($field['label'] ?? null, 255) ?? 'Untitled field';
-        $key = $this->cleanKey($field['key'] ?? null) ?? Str::slug($label, '_');
-        $key = $this->uniqueKey($key !== '' ? $key : 'field', $seenKeys);
+        $key = $this->cleanKey($field['key'] ?? null) ?? $this->cleanKey($label) ?? 'field';
+        $key = $this->uniqueKey($key, $seenKeys);
         $seenKeys[] = $key;
 
         $clean = [
@@ -367,10 +367,21 @@ final class SchemaSanitizer
 
     private function cleanKey(mixed $key): ?string
     {
-        if (! is_string($key)) {
-            return null;
-        }
-        $key = Str::slug($key, '_');
+        return is_string($key) ? self::slugKey($key) : null;
+    }
+
+    /**
+     * Normalise arbitrary text into a contract-valid field key
+     * (^[a-z][a-z0-9_]{0,63}$) or null when nothing usable remains.
+     * Shared with the import parsers so mapping-screen keys match what
+     * the save pipeline will accept — numbered questions ("2. Email")
+     * and non-Latin labels are the common real-world offenders.
+     */
+    public static function slugKey(string $text): ?string
+    {
+        $key = Str::slug($text, '_');
+        // The contract requires a leading letter.
+        $key = (string) preg_replace('/^[^a-z]+/', '', $key);
 
         return $key === '' ? null : Str::limit($key, 64, '');
     }

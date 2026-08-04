@@ -223,7 +223,7 @@ final class WordParser
 
         $field = SchemaFactory::field($inference['type'], [
             'label' => $label,
-            'key' => \Illuminate\Support\Str::slug(\Illuminate\Support\Str::limit($label, 60, ''), '_'),
+            'key' => \App\Schema\SchemaSanitizer::slugKey($label) ?? 'field',
             'required' => $required,
         ]);
         foreach ($inference['validation'] as $rule => $value) {

@@ -206,7 +206,10 @@ class ImportWizard extends Component
     {
         return $this->importUuid === null
             ? null
-            : Import::query()->where('uuid', $this->importUuid)->first();
+            : Import::query()
+                ->where('uuid', $this->importUuid)
+                ->where('user_id', auth()->id())
+                ->first();
     }
 
     public function startOver(): void

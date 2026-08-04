@@ -141,9 +141,9 @@ final class ExcelParser
 
             $field = SchemaFactory::field($type, [
                 'label' => $label,
-                'key' => isset($map['key']) && ($row[$map['key']] ?? '') !== ''
-                    ? Str::slug($row[$map['key']], '_')
-                    : Str::slug(Str::limit($label, 60, ''), '_'),
+                'key' => (isset($map['key']) && ($row[$map['key']] ?? '') !== ''
+                    ? \App\Schema\SchemaSanitizer::slugKey($row[$map['key']])
+                    : null) ?? \App\Schema\SchemaSanitizer::slugKey($label) ?? 'field',
                 'required' => isset($map['required'])
                     && in_array(strtolower($row[$map['required']] ?? ''), ['yes', 'y', 'true', '1', 'required'], true),
                 'placeholder' => isset($map['placeholder']) ? ($row[$map['placeholder']] ?: null) : null,
@@ -217,7 +217,7 @@ final class ExcelParser
             $inference = $this->inferencer->infer($label, $samples[$index] ?? null);
             $field = SchemaFactory::field($inference['type'], [
                 'label' => $label,
-                'key' => Str::slug(Str::limit($label, 60, ''), '_'),
+                'key' => \App\Schema\SchemaSanitizer::slugKey($label) ?? 'field',
             ]);
             foreach ($inference['validation'] as $rule => $value) {
                 $field['validation'][$rule] = $value;

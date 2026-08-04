@@ -42,6 +42,26 @@ test('sanitizer dedupes field keys', function () {
     expect($keys)->toBe(['email', 'email_2']);
 });
 
+test('numbered and non-latin labels still produce contract-valid keys', function () {
+    // Real-world questionnaire labels: numbered questions slug into
+    // digit-leading keys, Devanagari slugs into nothing at all.
+    $schema = (new SchemaSanitizer())->sanitize(makeSchema([
+        ['type' => 'text', 'label' => '1. Your Name', 'key' => '1_your_name'],
+        ['type' => 'email', 'label' => '2. Email Address'],
+        ['type' => 'text', 'label' => 'नाम लिखिए'],
+        ['type' => 'text', 'label' => '???'],
+    ]), lenient: true);
+
+    $keys = array_column($schema['sections'][0]['fields'], 'key');
+    foreach ($keys as $key) {
+        expect($key)->toMatch('/^[a-z][a-z0-9_]{0,63}$/');
+    }
+    expect($keys[0])->toBe('your_name')
+        ->and($keys[1])->toBe('email_address')
+        ->and($keys)->toBe(array_unique($keys))
+        ->and((new FormSchemaValidator())->validate($schema))->toBe([]);
+});
+
 test('sanitizer derives a key from the label when missing', function () {
     $schema = (new SchemaSanitizer())->sanitize(makeSchema([
         ['type' => 'text', 'label' => 'Your Full Name'],
