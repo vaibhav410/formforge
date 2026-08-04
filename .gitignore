@@ -11,3 +11,6 @@ ai-service/htmlcov/
 Thumbs.db
 
 ai-service/*.log
+
+# root compose env
+/.env

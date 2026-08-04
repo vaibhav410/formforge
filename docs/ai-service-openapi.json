@@ -1,0 +1,377 @@
+﻿{
+    "openapi":  "3.1.0",
+    "info":  {
+                 "title":  "FormForge AI Service",
+                 "description":  "LLM layer for the FormForge form builder. Converts natural-language prompts into validated form schemas, edits existing schemas, and translates them. Groq-only (free tier).",
+                 "version":  "1.0.0"
+             },
+    "paths":  {
+                  "/health":  {
+                                  "get":  {
+                                              "summary":  "Health",
+                                              "operationId":  "health_health_get",
+                                              "responses":  {
+                                                                "200":  {
+                                                                            "description":  "Successful Response",
+                                                                            "content":  {
+                                                                                            "application/json":  {
+                                                                                                                     "schema":  {
+                                                                                                                                    "additionalProperties":  true,
+                                                                                                                                    "type":  "object",
+                                                                                                                                    "title":  "Response Health Health Get"
+                                                                                                                                }
+                                                                                                                 }
+                                                                                        }
+                                                                        }
+                                                            }
+                                          }
+                              },
+                  "/v1/forms/generate":  {
+                                             "post":  {
+                                                          "summary":  "Generate Form",
+                                                          "operationId":  "generate_form_v1_forms_generate_post",
+                                                          "requestBody":  {
+                                                                              "content":  {
+                                                                                              "application/json":  {
+                                                                                                                       "schema":  {
+                                                                                                                                      "$ref":  "#/components/schemas/GenerateRequest"
+                                                                                                                                  }
+                                                                                                                   }
+                                                                                          },
+                                                                              "required":  true
+                                                                          },
+                                                          "responses":  {
+                                                                            "200":  {
+                                                                                        "description":  "Successful Response",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/AiResult"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    },
+                                                                            "422":  {
+                                                                                        "description":  "Unprocessable Content",
+                                                                                        "content":  {
+                                                                                                        "application/json":  {
+                                                                                                                                 "schema":  {
+                                                                                                                                                "$ref":  "#/components/schemas/ErrorResponse"
+                                                                                                                                            }
+                                                                                                                             }
+                                                                                                    }
+                                                                                    }
+                                                                        },
+                                                          "security":  [
+                                                                           {
+                                                                               "HTTPBearer":  [
+
+                                                                                              ]
+                                                                           }
+                                                                       ]
+                                                      }
+                                         },
+                  "/v1/forms/edit":  {
+                                         "post":  {
+                                                      "summary":  "Edit Form",
+                                                      "operationId":  "edit_form_v1_forms_edit_post",
+                                                      "requestBody":  {
+                                                                          "content":  {
+                                                                                          "application/json":  {
+                                                                                                                   "schema":  {
+                                                                                                                                  "$ref":  "#/components/schemas/EditRequest"
+                                                                                                                              }
+                                                                                                               }
+                                                                                      },
+                                                                          "required":  true
+                                                                      },
+                                                      "responses":  {
+                                                                        "200":  {
+                                                                                    "description":  "Successful Response",
+                                                                                    "content":  {
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/AiResult"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                }
+                                                                                },
+                                                                        "422":  {
+                                                                                    "description":  "Unprocessable Content",
+                                                                                    "content":  {
+                                                                                                    "application/json":  {
+                                                                                                                             "schema":  {
+                                                                                                                                            "$ref":  "#/components/schemas/ErrorResponse"
+                                                                                                                                        }
+                                                                                                                         }
+                                                                                                }
+                                                                                }
+                                                                    },
+                                                      "security":  [
+                                                                       {
+                                                                           "HTTPBearer":  [
+
+                                                                                          ]
+                                                                       }
+                                                                   ]
+                                                  }
+                                     },
+                  "/v1/forms/translate":  {
+                                              "post":  {
+                                                           "summary":  "Translate Form",
+                                                           "operationId":  "translate_form_v1_forms_translate_post",
+                                                           "requestBody":  {
+                                                                               "content":  {
+                                                                                               "application/json":  {
+                                                                                                                        "schema":  {
+                                                                                                                                       "$ref":  "#/components/schemas/TranslateRequest"
+                                                                                                                                   }
+                                                                                                                    }
+                                                                                           },
+                                                                               "required":  true
+                                                                           },
+                                                           "responses":  {
+                                                                             "200":  {
+                                                                                         "description":  "Successful Response",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/AiResult"
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     },
+                                                                             "422":  {
+                                                                                         "description":  "Unprocessable Content",
+                                                                                         "content":  {
+                                                                                                         "application/json":  {
+                                                                                                                                  "schema":  {
+                                                                                                                                                 "$ref":  "#/components/schemas/ErrorResponse"
+                                                                                                                                             }
+                                                                                                                              }
+                                                                                                     }
+                                                                                     }
+                                                                         },
+                                                           "security":  [
+                                                                            {
+                                                                                "HTTPBearer":  [
+
+                                                                                               ]
+                                                                            }
+                                                                        ]
+                                                       }
+                                          }
+              },
+    "components":  {
+                       "schemas":  {
+                                       "AiResult":  {
+                                                        "properties":  {
+                                                                           "schema":  {
+                                                                                          "additionalProperties":  true,
+                                                                                          "type":  "object",
+                                                                                          "title":  "Schema"
+                                                                                      },
+                                                                           "model":  {
+                                                                                         "type":  "string",
+                                                                                         "title":  "Model"
+                                                                                     },
+                                                                           "total_latency_ms":  {
+                                                                                                    "type":  "integer",
+                                                                                                    "title":  "Total Latency Ms"
+                                                                                                },
+                                                                           "prompt_tokens":  {
+                                                                                                 "type":  "integer",
+                                                                                                 "title":  "Prompt Tokens"
+                                                                                             },
+                                                                           "completion_tokens":  {
+                                                                                                     "type":  "integer",
+                                                                                                     "title":  "Completion Tokens"
+                                                                                                 },
+                                                                           "attempts":  {
+                                                                                            "items":  {
+                                                                                                          "$ref":  "#/components/schemas/AttemptLog"
+                                                                                                      },
+                                                                                            "type":  "array",
+                                                                                            "title":  "Attempts"
+                                                                                        }
+                                                                       },
+                                                        "type":  "object",
+                                                        "required":  [
+                                                                         "schema",
+                                                                         "model",
+                                                                         "total_latency_ms",
+                                                                         "prompt_tokens",
+                                                                         "completion_tokens",
+                                                                         "attempts"
+                                                                     ],
+                                                        "title":  "AiResult"
+                                                    },
+                                       "AttemptLog":  {
+                                                          "properties":  {
+                                                                             "attempt":  {
+                                                                                             "type":  "integer",
+                                                                                             "title":  "Attempt"
+                                                                                         },
+                                                                             "model":  {
+                                                                                           "type":  "string",
+                                                                                           "title":  "Model"
+                                                                                       },
+                                                                             "outcome":  {
+                                                                                             "type":  "string",
+                                                                                             "enum":  [
+                                                                                                          "success",
+                                                                                                          "invalid_json",
+                                                                                                          "schema_invalid",
+                                                                                                          "provider_error"
+                                                                                                      ],
+                                                                                             "title":  "Outcome"
+                                                                                         },
+                                                                             "latency_ms":  {
+                                                                                                "type":  "integer",
+                                                                                                "title":  "Latency Ms"
+                                                                                            },
+                                                                             "prompt_tokens":  {
+                                                                                                   "anyOf":  [
+                                                                                                                 {
+                                                                                                                     "type":  "integer"
+                                                                                                                 },
+                                                                                                                 {
+                                                                                                                     "type":  "null"
+                                                                                                                 }
+                                                                                                             ],
+                                                                                                   "title":  "Prompt Tokens"
+                                                                                               },
+                                                                             "completion_tokens":  {
+                                                                                                       "anyOf":  [
+                                                                                                                     {
+                                                                                                                         "type":  "integer"
+                                                                                                                     },
+                                                                                                                     {
+                                                                                                                         "type":  "null"
+                                                                                                                     }
+                                                                                                                 ],
+                                                                                                       "title":  "Completion Tokens"
+                                                                                                   },
+                                                                             "response_excerpt":  {
+                                                                                                      "anyOf":  [
+                                                                                                                    {
+                                                                                                                        "type":  "string"
+                                                                                                                    },
+                                                                                                                    {
+                                                                                                                        "type":  "null"
+                                                                                                                    }
+                                                                                                                ],
+                                                                                                      "title":  "Response Excerpt"
+                                                                                                  }
+                                                                         },
+                                                          "type":  "object",
+                                                          "required":  [
+                                                                           "attempt",
+                                                                           "model",
+                                                                           "outcome",
+                                                                           "latency_ms"
+                                                                       ],
+                                                          "title":  "AttemptLog",
+                                                          "description":  "One LLM round-trip; Laravel persists these as prompt_logs rows."
+                                                      },
+                                       "EditRequest":  {
+                                                           "properties":  {
+                                                                              "prompt":  {
+                                                                                             "type":  "string",
+                                                                                             "maxLength":  4000,
+                                                                                             "minLength":  3,
+                                                                                             "title":  "Prompt"
+                                                                                         },
+                                                                              "schema":  {
+                                                                                             "additionalProperties":  true,
+                                                                                             "type":  "object",
+                                                                                             "title":  "Schema"
+                                                                                         }
+                                                                          },
+                                                           "type":  "object",
+                                                           "required":  [
+                                                                            "prompt",
+                                                                            "schema"
+                                                                        ],
+                                                           "title":  "EditRequest"
+                                                       },
+                                       "ErrorResponse":  {
+                                                             "properties":  {
+                                                                                "detail":  {
+                                                                                               "type":  "string",
+                                                                                               "title":  "Detail"
+                                                                                           },
+                                                                                "attempts":  {
+                                                                                                 "items":  {
+                                                                                                               "$ref":  "#/components/schemas/AttemptLog"
+                                                                                                           },
+                                                                                                 "type":  "array",
+                                                                                                 "title":  "Attempts",
+                                                                                                 "default":  [
+
+                                                                                                             ]
+                                                                                             }
+                                                                            },
+                                                             "type":  "object",
+                                                             "required":  [
+                                                                              "detail"
+                                                                          ],
+                                                             "title":  "ErrorResponse"
+                                                         },
+                                       "GenerateRequest":  {
+                                                               "properties":  {
+                                                                                  "prompt":  {
+                                                                                                 "type":  "string",
+                                                                                                 "maxLength":  4000,
+                                                                                                 "minLength":  3,
+                                                                                                 "title":  "Prompt"
+                                                                                             },
+                                                                                  "locale":  {
+                                                                                                 "anyOf":  [
+                                                                                                               {
+                                                                                                                   "type":  "string",
+                                                                                                                   "maxLength":  10
+                                                                                                               },
+                                                                                                               {
+                                                                                                                   "type":  "null"
+                                                                                                               }
+                                                                                                           ],
+                                                                                                 "title":  "Locale"
+                                                                                             }
+                                                                              },
+                                                               "type":  "object",
+                                                               "required":  [
+                                                                                "prompt"
+                                                                            ],
+                                                               "title":  "GenerateRequest"
+                                                           },
+                                       "TranslateRequest":  {
+                                                                "properties":  {
+                                                                                   "target_language":  {
+                                                                                                           "type":  "string",
+                                                                                                           "maxLength":  50,
+                                                                                                           "minLength":  2,
+                                                                                                           "title":  "Target Language"
+                                                                                                       },
+                                                                                   "schema":  {
+                                                                                                  "additionalProperties":  true,
+                                                                                                  "type":  "object",
+                                                                                                  "title":  "Schema"
+                                                                                              }
+                                                                               },
+                                                                "type":  "object",
+                                                                "required":  [
+                                                                                 "target_language",
+                                                                                 "schema"
+                                                                             ],
+                                                                "title":  "TranslateRequest"
+                                                            }
+                                   },
+                       "securitySchemes":  {
+                                               "HTTPBearer":  {
+                                                                  "type":  "http",
+                                                                  "scheme":  "bearer"
+                                                              }
+                                           }
+                   }
+}
