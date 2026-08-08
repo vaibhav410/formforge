@@ -3,7 +3,7 @@
 Build forms by hand, generate them from a sentence, or import them from Word/Excel. Share a public link, collect submissions, export CSV, and watch completion analytics — with every form defined by a single JSON schema that drives the builder, the public renderer, server-side validation, storage and exports.
 
 > **Live demo:** https://formforge-zzoq.onrender.com &nbsp;·&nbsp; **Login:** `demo@formforge.test` / `password`
-> **AI service:** https://formforge-ai-vaibhav.vercel.app ([API docs](https://formforge-ai-vaibhav.vercel.app/docs))
+
 > The demo account ships with three seeded forms, ~100 submissions and 30 days of analytics.
 > *Free-tier notes: the site sleeps when idle — the **first load can take ~1 minute** to wake. The hosted demo runs Postgres + a sync queue (Render's free tier has no workers/Redis); the full MySQL + Redis + Horizon stack runs via `docker compose up` — see Deployment.*
 
